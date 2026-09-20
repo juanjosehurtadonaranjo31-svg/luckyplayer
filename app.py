@@ -17,14 +17,13 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # Añadimos user-agent de Android para simular una app móvil legítima sin requerir cookies
+        # Usamos yt-dlp con configuración de cliente web por defecto y formato seguro de extracción
         result = subprocess.run([
             "yt-dlp", 
             "--extract-audio", 
             "--audio-format", "mp3",
-            "--extractor-args", "youtube:player_client=android",
-            "--user-agent", "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
             "--no-check-certificates",
+            "--prefer-free-formats",
             "-o", output_file, 
             url
         ], capture_output=True, text=True, check=True)
