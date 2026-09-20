@@ -18,13 +18,12 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # Ejecutamos yt-dlp incorporando el archivo de cookies y el cliente de Android
+        # Ejecutamos yt-dlp usando las cookies y omitiendo el cliente android para evitar conflictos
         result = subprocess.run([
             "yt-dlp", 
             "--extract-audio", 
             "--audio-format", "mp3",
-            "--cookies", "cookies.txt",  # Salta la verificación de bot usando tus cookies
-            "--extractor-args", "youtube:player_client=android",
+            "--cookies", "cookies.txt",  # Utiliza tus cookies autenticadas
             "-o", output_file, 
             url
         ], capture_output=True, text=True, check=True)
