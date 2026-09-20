@@ -17,13 +17,12 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # Usamos las cookies y el cliente android para saltarnos el bloqueo de bots
+        # Usamos las cookies con el cliente web por defecto para evitar el conflicto de compatibilidad
         result = subprocess.run([
             "yt-dlp", 
             "--extract-audio", 
             "--audio-format", "mp3",
             "--cookies", "cookies.txt",
-            "--extractor-args", "youtube:player_client=android",
             "--no-check-certificates",
             "-o", output_file, 
             url
