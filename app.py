@@ -17,7 +17,7 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # Ejecución estándar y ligera con cookies para evitar caídas 502 por memoria
+        # yt-dlp utilizará js2py automáticamente como intérprete JS para las firmas
         result = subprocess.run([
             "yt-dlp", 
             "--extract-audio", 
