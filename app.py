@@ -4,9 +4,6 @@ import os
 
 app = Flask(__name__)
 
-# Actualizar yt-dlp automáticamente al iniciar el servidor para evitar bloqueos de firma
-subprocess.run(["pip", "install", "--upgrade", "yt-dlp"], capture_output=True)
-
 @app.route('/download', methods=['POST'])
 def download_audio():
     data = request.get_json()
@@ -20,13 +17,13 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # Ejecutamos yt-dlp con argumentos estables omitiendo retos complejos de navegador
+        # Usamos el cliente tv / mweb y las cookies para evitar el fallo de firma JS
         result = subprocess.run([
             "yt-dlp", 
             "--extract-audio", 
             "--audio-format", "mp3",
             "--cookies", "cookies.txt",
-            "--geo-bypass",
+            "--extractor-args", "youtube:player_client=tv",
             "-o", output_file, 
             url
         ], capture_output=True, text=True, check=True)
