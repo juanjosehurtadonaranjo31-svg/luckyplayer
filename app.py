@@ -17,7 +17,7 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # Comando completo con cookies y manejo de formatos estables
+        # Ejecución estándar y ligera con cookies para evitar caídas 502 por memoria
         result = subprocess.run([
             "yt-dlp", 
             "--extract-audio", 
