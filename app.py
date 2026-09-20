@@ -13,21 +13,21 @@ def download_audio():
     url = data.get('url')
     output_file = "audio_output.mp3"
     
-    # Eliminar el archivo previo si existe para evitar conflictos
+    # Limpiar archivo previo si existe
     if os.path.exists(output_file):
         os.remove(output_file)
 
     try:
-        # Configuración robusta de yt-dlp usando Deno, EJS y cookies
+        # Configuración usando Node.js y cliente web estándar con cookies
         result = subprocess.run([
             "yt-dlp",
             "--extract-audio",
             "--audio-format", "mp3",
             "--audio-quality", "0",
             "--cookies", "cookies.txt",
-            "--js-runtimes", "deno",
+            "--js-runtimes", "node",
             "--remote-components", "ejs:github",
-            "--extractor-args", "youtube:player_client=web,android",
+            "--extractor-args", "youtube:player_client=web",
             "--no-playlist",
             "-o", output_file,
             url
@@ -47,6 +47,5 @@ def download_audio():
         return {"error": f"Error general: {str(e)}"}, 500
 
 if __name__ == '__main__':
-    # Usar puerto de entorno o 5000 por defecto
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
