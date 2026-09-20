@@ -4,6 +4,9 @@ import os
 
 app = Flask(__name__)
 
+# Actualizar yt-dlp automáticamente al iniciar el servidor para evitar bloqueos de firma
+subprocess.run(["pip", "install", "--upgrade", "yt-dlp"], capture_output=True)
+
 @app.route('/download', methods=['POST'])
 def download_audio():
     data = request.get_json()
@@ -17,12 +20,13 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # yt-dlp utilizará js2py automáticamente como intérprete JS para las firmas
+        # Ejecutamos yt-dlp con argumentos estables omitiendo retos complejos de navegador
         result = subprocess.run([
             "yt-dlp", 
             "--extract-audio", 
             "--audio-format", "mp3",
             "--cookies", "cookies.txt",
+            "--geo-bypass",
             "-o", output_file, 
             url
         ], capture_output=True, text=True, check=True)
