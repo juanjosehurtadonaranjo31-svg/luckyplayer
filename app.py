@@ -13,26 +13,33 @@ def download_audio():
     url = data.get('url')
     output_file = "audio_output.mp3"
     
+    # Eliminar el archivo previo si existe para evitar conflictos
     if os.path.exists(output_file):
         os.remove(output_file)
 
     try:
-        # Usamos las cookies con el cliente web por defecto para evitar el conflicto de compatibilidad
+        # Configuración robusta de yt-dlp usando Deno, EJS y cookies
         result = subprocess.run([
-            "yt-dlp", 
-            "--extract-audio", 
+            "yt-dlp",
+            "--extract-audio",
             "--audio-format", "mp3",
+            "--audio-quality", "0",
             "--cookies", "cookies.txt",
-            "--no-check-certificates",
-            "-o", output_file, 
+            "--js-runtimes", "deno",
+            "--remote-components", "ejs:github",
+            "--extractor-args", "youtube:player_client=web,android",
+            "--no-playlist",
+            "-o", output_file,
             url
-        ], capture_output=True, text=True, check=True)
+        ], capture_output=True, text=True, check=True, timeout=180)
         
         if os.path.exists(output_file):
             return send_file(output_file, as_attachment=True, download_name="song.mp3")
         else:
             return {"error": "El archivo de audio no se generó físicamente en el servidor"}, 500
             
+    except subprocess.TimeoutExpired:
+        return {"error": "La descarga tardó demasiado tiempo (Timeout)."}, 504
     except subprocess.CalledProcessError as e:
         error_detalles = e.stderr if e.stderr else e.stdout
         return {"error": f"Fallo yt-dlp: {error_detalles}"}, 500
@@ -40,4 +47,6 @@ def download_audio():
         return {"error": f"Error general: {str(e)}"}, 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # Usar puerto de entorno o 5000 por defecto
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
