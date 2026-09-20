@@ -18,20 +18,23 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # Configuración usando Node.js y cliente web estándar con cookies
+        # Comando ligero y optimizado para evitar caídas por memoria en Render
         result = subprocess.run([
             "yt-dlp",
             "--extract-audio",
             "--audio-format", "mp3",
-            "--audio-quality", "0",
+            "--audio-quality", "5",
             "--cookies", "cookies.txt",
-            "--js-runtimes", "node",
-            "--remote-components", "ejs:github",
             "--extractor-args", "youtube:player_client=web",
             "--no-playlist",
             "-o", output_file,
             url
-        ], capture_output=True, text=True, check=True, timeout=180)
+        ], capture_output=True, text=True, timeout=90)
+        
+        # Manejo de errores simplificado y directo
+        if result.returncode != 0:
+            error_msg = result.stderr or result.stdout or "Error desconocido"
+            return {"error": f"Fallo yt-dlp: {error_msg}"}, 500
         
         if os.path.exists(output_file):
             return send_file(output_file, as_attachment=True, download_name="song.mp3")
@@ -40,9 +43,6 @@ def download_audio():
             
     except subprocess.TimeoutExpired:
         return {"error": "La descarga tardó demasiado tiempo (Timeout)."}, 504
-    except subprocess.CalledProcessError as e:
-        error_detalles = e.stderr if e.stderr else e.stdout
-        return {"error": f"Fallo yt-dlp: {error_detalles}"}, 500
     except Exception as e:
         return {"error": f"Error general: {str(e)}"}, 500
 
