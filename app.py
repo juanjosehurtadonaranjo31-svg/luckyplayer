@@ -17,13 +17,13 @@ def download_audio():
         os.remove(output_file)
 
     try:
-        # Usamos el cliente tv / mweb y las cookies para evitar el fallo de firma JS
+        # Usamos client mweb y omitimos validaciones estrictas de firma que causan el error
         result = subprocess.run([
             "yt-dlp", 
             "--extract-audio", 
             "--audio-format", "mp3",
-            "--cookies", "cookies.txt",
-            "--extractor-args", "youtube:player_client=tv",
+            "--extractor-args", "youtube:player_client=mweb",
+            "--no-check-certificates",
             "-o", output_file, 
             url
         ], capture_output=True, text=True, check=True)
